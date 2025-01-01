@@ -1,5 +1,5 @@
 //
-//  ExchangeRate.swift
+//  SelectCurrency.swift
 //  LOTR
 //
 //  Created by Eri on 28.12.24.
@@ -7,30 +7,59 @@
 
 import SwiftUI
 
-struct ExchangeRate: View {
-    let leftImage: ImageResource
-    let text: String
-    let rightImage: ImageResource
+struct SelectCurrency: View {
+    @Environment(\.dismiss) var dismiss
     
+    @Binding var topCurrency: Currency
+    @Binding var bottomCurrency: Currency
     
     var body: some View {
-        HStack{
-            // Left currency image
-            Image(leftImage)
+        ZStack {
+            // Parchment Background Image
+            Image(.parchment)
                 .resizable()
-                .scaledToFit()
-                .frame(height: 33)
-            // Exchange rate text
-            Text(text)
-            // Right currency image
-            Image(rightImage)
-                .resizable()
-                .scaledToFit()
-                .frame(height: 33)
+                .ignoresSafeArea()
+                .background(.brown)
+            
+            VStack{
+                // Text
+                Text("Select the currency you are starting with:")
+                    .fontWeight(.bold)
+                    
+                
+                // Currency Icons
+                IconGrid(currency: $topCurrency)
+                
+                
+                
+                // Text
+                Text("Select the currency you would like to convert to:")
+                    .fontWeight(.bold)
+                    .padding(.top)
+                
+                // Currency Icons
+                IconGrid(currency: $bottomCurrency)
+                // Done Button
+                Button("Done"){
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.brown.mix(with: .black, by: 0.2))
+                .font(.largeTitle)
+                .padding()
+                .foregroundStyle(.white)
+            }
+            .padding()
+            .multilineTextAlignment(.center)
+            .foregroundStyle(.black)
         }
     }
+
 }
     #Preview {
-        ExchangeRate(leftImage: .silverpiece, text: "1 Silver Piece = 4 Silver Pennies", rightImage: .silverpenny)
+        @Previewable @State var topCurrency: Currency = .silverPenny
+        @Previewable @State var bottomCurrency: Currency = .goldPenny
+        
+        SelectCurrency(topCurrency: $topCurrency, bottomCurrency: $bottomCurrency)
     }
-
+    
