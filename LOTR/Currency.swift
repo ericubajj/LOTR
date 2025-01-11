@@ -9,7 +9,7 @@ import SwiftUI
 
 enum Currency: Double, CaseIterable, Identifiable {
     
-    
+    case aiGenerated = 12800
     case copperPenny = 6400
     case silverPenny = 64
     case silverPiece = 16
@@ -30,6 +30,8 @@ enum Currency: Double, CaseIterable, Identifiable {
                 .goldpenny
         case .goldPiece:
                 .goldpiece
+        case .aiGenerated:
+                .aiGenerated86261731280
         }
     }
     
@@ -45,6 +47,8 @@ enum Currency: Double, CaseIterable, Identifiable {
             "Gold Penny"
         case .goldPiece:
             "Gold Piece"
+        case .aiGenerated:
+            "Fake Coin"
         }
     }
     
