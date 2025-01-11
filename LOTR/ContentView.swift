@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import TipKit
 
 struct ContentView: View {
     @State var showExchangeInfo = false
@@ -19,7 +20,10 @@ struct ContentView: View {
     @State var showSelectCurrency = false
     
     @State var leftCurrency: Currency = .silverPiece
+    
     @State var rightCurrency: Currency = .goldPiece
+    
+    let currencyTip = CurrencyTip()
     
     
     var body: some View {
@@ -62,13 +66,17 @@ struct ContentView: View {
                         .padding(.bottom, -5)
                         .onTapGesture {
                             showSelectCurrency.toggle()
+                            currencyTip.invalidate(reason: .actionPerformed)
                         }
                         // Text Field
                         TextField("Amount", text: $leftAmount)
                             .textFieldStyle(.roundedBorder)
                             .focused($leftTyping)
                         
+                        
+                        
                     }
+                    .popoverTip(currencyTip, arrowEdge: .bottom)
                     
                     // Equal Sign
                     Image(systemName: "equal")
@@ -93,13 +101,15 @@ struct ContentView: View {
                         .padding(.bottom, -5)
                         .onTapGesture {
                             showSelectCurrency.toggle()
+                            currencyTip.invalidate(reason: .actionPerformed)
                         }
+                        
                         // Text Field
                         TextField("Amount", text: $rightAmount)
                             .textFieldStyle(.roundedBorder)
                             .focused($rightTyping)
                             .multilineTextAlignment(.trailing)
-                            
+                        
                     }
                 }
                 .padding()
@@ -124,27 +134,34 @@ struct ContentView: View {
                 }
             }
         }
-                    .onChange(of: leftAmount) {
-                        if leftTyping == true {
-                            rightAmount = leftCurrency.convert(leftAmount, to: rightCurrency)
-                        }
-                    }
-                    .onChange(of: rightAmount) {
-                        if rightTyping == true {
-                            leftAmount = rightCurrency.convert(rightAmount, to: leftCurrency)}
-                    }
-                    .onChange(of: leftCurrency) {
-                        leftAmount = rightCurrency.convert(rightAmount, to: leftCurrency)
-                    }
-                    .onChange(of: rightCurrency) {
-                        rightAmount = leftCurrency.convert(leftAmount, to: rightCurrency)
-                    }
-                    .sheet(isPresented: $showExchangeInfo) {
-                        ExchangeInfo()
-                    }
-                    .sheet(isPresented: $showSelectCurrency) {
-                        SelectCurrency(topCurrency: $leftCurrency, bottomCurrency: $rightCurrency)
-//             .border(.blue)
+        .onTapGesture {
+            leftTyping = false
+            rightTyping = false
+        }
+        .task {
+            try? Tips.configure()
+        }
+        .onChange(of: leftAmount) {
+            if leftTyping == true {
+                rightAmount = leftCurrency.convert(leftAmount, to: rightCurrency)
+            }
+        }
+        .onChange(of: rightAmount) {
+            if rightTyping == true {
+                leftAmount = rightCurrency.convert(rightAmount, to: leftCurrency)}
+        }
+        .onChange(of: leftCurrency) {
+            leftAmount = rightCurrency.convert(rightAmount, to: leftCurrency)
+        }
+        .onChange(of: rightCurrency) {
+            rightAmount = leftCurrency.convert(leftAmount, to: rightCurrency)
+        }
+        .sheet(isPresented: $showExchangeInfo) {
+            ExchangeInfo()
+        }
+        .sheet(isPresented: $showSelectCurrency) {
+            SelectCurrency(topCurrency: $leftCurrency, bottomCurrency: $rightCurrency)
+            //             .border(.blue)
         }
     }
 }
